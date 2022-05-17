@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Author : 柠檬味_LMei - QQ
+# @Email : mccllm@qq.com
+# @Time : 2022/05/17
+# @Detailed : 将原项目多文件（见“原项目图.png”）整合进一个文件中，同时实现识别文件、录入文件、计算文件、输出文件等功能
+
 import os
 import sys
 import json
@@ -8,17 +15,11 @@ import matplotlib.pyplot as plt
 import scipy.interpolate as spi
 
 
-# ks3
+# 原ks3分文件内容 - 用于绘制拟合曲线并输出图片文件
 class Painter:
 
-    # # 画频数分布直方图
-    # def draw_dis_img(filepath: str, mid_pair: dict):
-    #     fig = plt.bar(mid_pair.keys(), mid_pair.values(), width=2)
-    #     # plt.show()
-    #     fig.savefig(filepath)
-
     __data_label = (("算数平均值", "加权平均值", "标准差", "光滑度", "三阶中心矩", "信息熵"),  # title
-                    ("T(K)", "T(K)", "温度T(K)", "", "T^3(K^3)", ""))  # y label)
+                    ("T(K)", "T(K)", "温度T(K)", "", "T^3(K^3)", ""))  # y label
     __st_fp = ""  # 文件夹路径
     __y_value = []
     __x_value = []
@@ -77,56 +78,28 @@ class Painter:
             y_sorted.clear()
             y_value.clear()
 
-            print(Painter.__data_label[0][ii])
-            # print(Painter.__x_value)
+            print(Painter.__data_label[0][ii])  # 显示当前正在处理哪个图片
 
             for num in Painter.__y_value:
                 y_value.append(num[ii])
             points = dict(zip(Painter.__x_value, y_value))
 
-            # print(y_value)
-            # print(points)
-
             for x in sorted(points.keys()):
                 x_sorted.append(x)
                 y_sorted.append(points[x])
-
-            # print(x_sorted)
-            # print(y_sorted)
 
             x_list = np.linspace(x_sorted[0], x_sorted[len(x_sorted) - 1], 100)  # 待求插值的位置
 
             func1 = spi.interp1d(x_sorted, y_sorted, kind="cubic")  # 拟合函数
 
-            # fig, ax1 = plt.subplots(figsize=(4, 3))
-            # ax1.plot(x_sorted, y_sorted, "ro", label="样本点")
-            # ax1.plot(x_list, func1(x_list), "b", label="三次样条插值")
-            # ax1.plot(x_sorted, y_sorted, "r--", label="线性插值")
-            # if Painter.__data_label[0][ii] == "标准差和光滑度":
-            #     ax1.set_ylabel("标准差")
-            #     ax2 = ax1.twinx()
-            #     ax2.set_ylabel("光滑度")
-            #     y2_sorted = []
-            #     for yy in y_sorted:
-            #         y2_sorted.append(1 - 1 / (1 + yy ** 2))
-            #     ax2.plot(x_sorted, y2_sorted, "")
-            # else:
-            #     plt.ylabel(Painter.__data_label[1][ii])  # y轴标签
-
-
             plt.plot(x_sorted, y_sorted, "ro", label="样本点")  # 画点
             plt.plot(x_list, func1(x_list), "b", label="三次样条插值")  # 画线
             plt.plot(x_sorted, y_sorted, "r--", label="线性插值")
-            plt.legend()
-            plt.grid()
+            plt.legend()  # 显示标签
+            plt.grid()  # 网格
             plt.title(Painter.__data_label[0][ii])  # 标题
             plt.xlabel(Painter.__x_label)  # x轴标签
             plt.ylabel(Painter.__data_label[1][ii])  # y轴标签
-            # TODO: 合并光滑度 和 标准差图
-
-            # foo = plt.yticks()
-            # print(foo)
-
 
             # plt.show()  # 展示
             plt.savefig(Painter.__st_fp + Painter.__data_label[0][ii] + suffix)  # 输出文件
@@ -143,7 +116,7 @@ class Painter:
         Painter.__x_label = ""
 
 
-# ks2
+# 原ks2分文件内容 - 频数统计分段及计算各参数（平均值，标准差，光滑度，三阶矩，信息熵）
 class CalculateTool:
 
     # 带参初始化
@@ -247,26 +220,6 @@ class CalculateTool:
             self.entropy += value * np.log2(value)
         self.entropy = -self.entropy
 
-    # 打印信息
-    def __str__(self):
-        str1 = "路径：" + self.filepath + "\n" + \
-               "文件名：" + self.filename + "\n" + \
-               "数据个数：" + str(self.elem_counts) + "\n" + \
-               "算数平均值：" + str(self.mean) + "\n" + \
-               "加权平均值：" + str(self.average) + "\n" + \
-               "标准差：" + str(self.std) + "\n" + \
-               "光滑度：" + str(self.smoothness) + "\n" + \
-               "三阶中心矩：" + str(self.c_moment3) + "\n" + \
-               "信息熵：" + str(self.entropy) + "\n" + \
-               "分段信息：" + "{\n"
-        count = 0
-        for key, value in self.mid_pair.items():
-            str1 += str(key) + ": " + str(value) + "\n"
-            count += value
-        str1 += "}"
-        str1 += "累计 " + str(count) + " 个数据（核算用）"  # 不需要可以注释掉
-        return str1
-
     # 一轮计算
     def calculate(self):
         print("C -> " + self.filename)
@@ -287,7 +240,6 @@ class CalculateTool:
                 wb.sheets[0].name = "频数统计"
                 wb.sheets.add("计算结果")
             else:
-                # filepath = self.folder_path + "\\" + self.o_file_name + ".xlsx"
                 wb = self.app.books.active
         except Exception as result:
             print("打开时出现问题：" + result.__str__())
@@ -295,7 +247,8 @@ class CalculateTool:
         try:
             st = wb.sheets["计算结果"]
             if self.file_count == 1:
-                st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "光滑度", "三阶中心矩", "信息熵", "", "频数统计分段数"]
+                st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "光滑度", "三阶中心矩", 
+                                          "信息熵", "", "频数统计分段数"]
                 st.range((2, 9)).value = self.dis_num
             st.range((self.file_count + 1, 1)).value = [self.filename, self.mean, self.average, self.std,
                                                         self.smoothness, self.c_moment3, self.entropy]
@@ -314,9 +267,8 @@ class CalculateTool:
         Painter.st_enter_line_data(self.folder_path + "\\", self.file_count, filename_num, ys, xl)
 
 
-# ks1
+# 原ks1分文件内容 - 文件管理系统：找到指定路径下应该去计算的文件
 class FileControlSystem:
-    # def __init__(self, filepath: str, cfg_path: str = sys.path[0] + "\\config.json")
     def __init__(self, filepath: str, cfg_path: str):
         self.filepath = filepath
         self.cfg_path = cfg_path
@@ -365,8 +317,6 @@ class FileControlSystem:
             for name in path_list:  # 递归
                 if self.__work(filepath + name, d + 1):
                     b = True
-                # else:
-                #     self.__work(filepath + name, d + 1)
             if b:  # 保存xlsx时需要执行的操作
                 try:
                     self.wb = self.app.books.active
@@ -379,26 +329,12 @@ class FileControlSystem:
                 Painter.st_draw_line_img(self.config)
             return True
 
-    def __str__(self):
-        s = "{\n\t路径：" + self.filepath + "\n\t后缀：" + self.suffix + "\n\t排除：["
-        n = 0
-        while True:
-            s += self.o_f_name[n]
-            n += 1
-            if n >= len(self.o_f_name):
-                s += "]\n}"
-                break
-            s += ", "
-        return s
-
     # 清空之前的计算结果文件
     def __clear_obsolete_files(self, folder_path: str):
         try:
             path = folder_path + self.o_f_name + ".xlsx"
             os.remove(path)
-            # print("移除旧文件成功")
         except FileNotFoundError:
-            # print("移除旧文件出现问题：" + result.__str__())
             pass
 
 
@@ -422,7 +358,6 @@ def __get_path():
 def __read_cfg():
     try:
         config = json.load(open(sys.path[0] + "\\config.json", encoding="utf-8"))
-        # print(len(config.__str__()))
         if len(config.__str__()) <= __sizeof_min_cfg():
             raise Exception
     except FileNotFoundError:
@@ -465,4 +400,4 @@ if __name__ == '__main__':
     filepath, cfg_path = show_menu()
     fcs = FileControlSystem(filepath, cfg_path)
     fcs.begin()
-    # input("输入任意键继续")
+    print("数据已处理完成")
