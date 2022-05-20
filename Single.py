@@ -58,9 +58,10 @@ class Painter:
 
 		# 2. 绘图
 		plt.rcParams['font.family'] = ['SimSun']  # 解决 中文字体 无法显示问题
-		plt.rcParams['figure.size'] = [9, 5]
+		plt.rcParams['figure.figsize'] = [9, 5]
+		plt.rcParams['font.size'] = 18
 		plt.rcParams['axes.unicode_minus'] = False  # 解决 减号 无法显示问题
-		my_font = matplotlib.font_manager.FontProperties(family="SimSun", size=16)
+		my_font = matplotlib.font_manager.FontProperties(family="SimSun", size=18)
 
 		x_sorted = []
 		y_sorted = []
