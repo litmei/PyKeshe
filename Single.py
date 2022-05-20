@@ -104,10 +104,10 @@ class Painter:
 			plt.plot(x_sorted, y_sorted, "r--", label="线性插值")
 			plt.legend(prop=my_font)  # 显示标签
 			plt.grid()  # 网格
-			plt.title("({0}){1}".format(Painter.__abc[count], Painter.__data_label[0][ii]), size=20, y=-0.3)  # 标题
+			plt.title("({0}){1}".format(Painter.__abc[count], Painter.__data_label[0][ii]), size=25, y=-0.42)  # 标题
 			plt.xlabel(Painter.__x_label, x=0.93)  # x轴标签
 			plt.ylabel(Painter.__data_label[1][ii], y=0.9)  # y轴标签
-			plt.subplots_adjust(bottom=0.4, left=0.3, right=0.95, top=0.95)
+			plt.subplots_adjust(bottom=0.28, left=0.15, right=0.98, top=0.95)
 			plt.xticks(rotation=45)
 			count += 1
 
