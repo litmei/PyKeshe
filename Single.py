@@ -352,6 +352,8 @@ def __get_path():
 	filepath = input("输入文件或文件夹路径来开始：\n")
 	while True:
 		if not os.path.exists(filepath):  # 检测是否为路径
+			if len(filepath) < 2:
+				break
 			# 去除两侧符号后再检测一次（比如去除双引号），Python可以使用连续相等来判断
 			if filepath[0] == filepath[len(filepath) - 1] == "\"":
 				filepath = filepath[1:len(filepath) - 1]
