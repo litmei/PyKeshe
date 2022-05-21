@@ -107,7 +107,7 @@ class Painter:
 			plt.title("({0}){1}".format(Painter.__abc[count], Painter.__data_label[0][ii]), size=25, y=-0.42)  # 标题
 			plt.xlabel(Painter.__x_label, x=0.93)  # x轴标签
 			plt.ylabel(Painter.__data_label[1][ii], y=0.9)  # y轴标签
-			plt.subplots_adjust(bottom=0.28, left=0.15, right=0.98, top=0.94)
+			plt.subplots_adjust(bottom=0.28, left=0.18, right=0.98, top=0.94)
 			plt.xticks(rotation=45)
 			count += 1
 
@@ -201,20 +201,22 @@ class CalculateTool:
 		dis_val = (max_val - min_val) / self.dis_num  # 每段长度
 		mid_val = min_val + dis_val / 2  # 中值
 		mid_count = 0  # 中值计数
-		counts = 0  # 总计数
+		num_counts = 0  # 段内数计数
+		part_counts = 1 # 段计数
 		next_num = min_val + dis_val  # 右边界值
 		while True:
-			num = self.nums[counts]
+			num = self.nums[num_counts]
 			if num < next_num:  # 当前比较数字 小于 当前区间右边界
 				mid_count += 1
-				counts += 1
+				num_counts += 1
 			else:  # 大于等于右边界
 				self.mid_pair[mid_val] = mid_count
 				mid_val += dis_val
 				mid_count = 0
 				next_num += dis_val
-				if next_num >= max_val:  # 如果下一阶段为最后一阶段
-					mid_count = self.elem_counts - counts
+				part_counts += 1
+				if part_counts == self.dis_num: # 如果下一阶段为最后一阶段
+					mid_count = self.elem_counts - num_counts
 					self.mid_pair[mid_val] = mid_count
 					break
 
