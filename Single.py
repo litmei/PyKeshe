@@ -70,11 +70,13 @@ class Painter:
 				return
 
 		# 2. 绘图
-		plt.rcParams['font.family'] = ['SimSun']  # 解决 中文字体 无法显示问题
-		plt.rcParams['figure.figsize'] = [9, 5]
-		plt.rcParams['font.size'] = 20
+		plt.rcParams['font.family'] = ['Microsoft YaHei']  # 解决 中文字体 无法显示问题
+		plt.rcParams['figure.figsize'] = [3, 1.8]
+		plt.rcParams['font.size'] = 7
 		plt.rcParams['axes.unicode_minus'] = False  # 解决 减号 无法显示问题
 		# my_font = matplotlib.font_manager.FontProperties(family="SimSun", size=18)
+		plt.rcParams['xtick.direction'] = 'in'
+		plt.rcParams['ytick.direction'] = 'in'
 
 		x_sorted = []
 		y_sorted = []
@@ -106,20 +108,20 @@ class Painter:
 
 			func1 = spi.interp1d(x_sorted, y_sorted, kind="cubic")  # 拟合函数
 
-			plt.plot(x_sorted, y_sorted, "ro", label="样本点")  # 画点
-			plt.plot(x_list, func1(x_list), "b", label="三次样条插值")  # 画线
-			plt.plot(x_sorted, y_sorted, "r--", label="线性插值")
+			plt.plot(x_sorted, y_sorted, "ro", label="样本点", markersize=4)  # 画点
+			plt.plot(x_list, func1(x_list), "b", label="Cubic")  # 画线
+			plt.plot(x_sorted, y_sorted, "r--", label="Linear")
 			plt.legend()  # 显示标签
 			plt.grid()  # 网格
-			plt.title("({0}){1}".format(Painter.__abc[count], Painter.__data_label.get(Painter.__data_label_key)[0][ii]), size=25, y=-0.42)  # 标题
+			plt.title("({0}){1}".format(Painter.__abc[count], Painter.__data_label.get(Painter.__data_label_key)[0][ii]), size=10, y=-0.6)  # 标题
 			plt.xlabel(Painter.__x_label, x=0.93)  # x轴标签
 			plt.ylabel(Painter.__data_label.get(Painter.__data_label_key)[1][ii], y=0.9)  # y轴标签
-			plt.subplots_adjust(bottom=0.28, left=0.18, right=0.98, top=0.94)
+			plt.subplots_adjust(bottom=0.35, left=0.22, right=0.99, top=0.90)
 			plt.xticks(rotation=45)
 			count += 1
 
 			#plt.show()  # 展示
-			plt.savefig(Painter.__st_fp + str(count) + Painter.__data_label.get(Painter.__data_label_key)[0][ii] + suffix)  # 输出文件
+			plt.savefig(Painter.__st_fp + str(count) + Painter.__data_label.get(Painter.__data_label_key)[0][ii] + suffix, )  # 输出文件
 			plt.clf()  # 清空画布
 
 			ii += 1
