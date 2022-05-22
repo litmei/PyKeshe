@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6f61516b-870d-42b5-90fb-32be7fb7289c}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Single.py</StartupFile>
+    <StartupFile>删除指定文件.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>

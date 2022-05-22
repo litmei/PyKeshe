@@ -28,8 +28,6 @@ class Painter:
 	 				("", "", "", "", "", ""))
 		}
 	__data_label_key = ""
-	# (("算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", "信息熵"),  # title
-	# 				("T(K)", "T(K)", "温度T(K)", "", "T^3(K^3)", ""))  # y label
 	__abc = "abcdef"  # 序号
 	__st_fp = ""  # 文件夹路径
 	__y_value = []
@@ -282,7 +280,7 @@ class CalculateTool:
 		try:
 			st = wb.sheets["计算结果"]
 			if self.file_count == 1:
-				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "偏度", "三阶中心矩", 
+				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", 
 										  "信息熵", "", "频数统计分段数"]
 				st.range((2, 9)).value = self.dis_num
 			st.range((self.file_count + 1, 1)).value = [self.filename, self.mean, self.average, self.std,
