@@ -164,7 +164,7 @@ class CalculateTool:
 		self.elem_counts = np.shape(self.nums)[0]  # 数据个数
 
 		# 数据声明
-		self.mean = self.average = self.std = self.smoothness = self.c_moment3 = self.entropy = 0.0
+		self.mean = self.average = self.std = self.smoothness = self.c_moment3 = self.entropy = self.sk = 0.0
 		self.mid_pair = {}
 
 	# 算数平均值
@@ -198,6 +198,13 @@ class CalculateTool:
 	# 三阶中心距
 	def get_c_moment3(self):
 		return self.c_moment3
+
+	# 偏度
+	def __cal_skewness(self):
+		self.sk = self.c_moment3/(self.std ** 3)
+
+	def get_skewness(self):
+		return self.sk
 
 	def __cal_c_moment3(self):
 		self.c_moment3 = np.sum((self.nums - self.mean) ** 3) / self.elem_counts
@@ -255,6 +262,7 @@ class CalculateTool:
 		self.__cal_std()
 		self.__cal_smoothness()
 		self.__cal_c_moment3()
+		self.__cal_skewness()
 		self.__do_fd()
 		self.__cal_entropy()
 
@@ -274,11 +282,11 @@ class CalculateTool:
 		try:
 			st = wb.sheets["计算结果"]
 			if self.file_count == 1:
-				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "光滑度", "三阶中心矩", 
+				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "偏度", "三阶中心矩", 
 										  "信息熵", "", "频数统计分段数"]
 				st.range((2, 9)).value = self.dis_num
 			st.range((self.file_count + 1, 1)).value = [self.filename, self.mean, self.average, self.std,
-														self.smoothness, self.c_moment3, self.entropy]
+														self.smoothness, self.sk, self.entropy]
 
 			st = wb.sheets["频数统计"]
 			st.range((self.file_count * 3 - 2, 1)).value = [self.filename]
@@ -288,7 +296,7 @@ class CalculateTool:
 
 		# 导出图片 -- 录入本次计算结果
 		filename_num = float(self.filename)
-		ys = [self.mean, self.average, self.std, self.smoothness, self.c_moment3, self.entropy]
+		ys = [self.mean, self.average, self.std, self.smoothness, self.sk, self.entropy]
 		xl = self.folder_path[self.folder_path.rfind("\\") + 1:len(self.folder_path)]
 		xl = re.sub(r"^\d*", "", xl)  # 正则，去除文件夹名称中的数字
 		Painter.st_enter_line_data(self.folder_path + "\\", self.file_count, filename_num, ys, xl)
