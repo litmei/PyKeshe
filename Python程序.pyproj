@@ -21,6 +21,7 @@
   <ItemGroup>
     <Compile Include="Single.py" />
     <Compile Include="删除指定文件.py" />
+    <Compile Include="模块1.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.10" />
