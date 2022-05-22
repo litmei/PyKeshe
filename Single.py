@@ -4,6 +4,7 @@
 # @Email : mccllm@qq.com
 # @Time : 2022/05/17
 # @Detailed : 将原项目多文件（见“原项目图.png”）整合进一个文件中，同时实现识别文件、录入文件、计算文件、输出文件等功能
+# @Attention : 使用了第三方库 xlwings、numpy、matplotlib 和 scipy，使用前应使用包安装工具进行安装；xlwings另需本地安装Excel的支持
 
 import os
 import sys
@@ -12,7 +13,6 @@ import xlwings as xw
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-import matplotlib
 import scipy.interpolate as spi
 
 
@@ -20,12 +20,12 @@ import scipy.interpolate as spi
 class Painter:
 
 	__data_label = {
-		"T": (("算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", "信息熵"),
-	 				("T(K)", "T(K)", "T(K)", "", "", "")),
-		"R": (("算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", "信息熵"),
-	 				("R(W/m^2)", "R(K/m^2)", "R(W/m^2)", "", "", "")),
-		"Other": (("算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", "信息熵"),
-	 				("", "", "", "", "", ""))
+		"T": (("算数平均值", "加权平均值", "标准差", "偏度", "信息熵"),
+	 				("T(K)", "T(K)", "T(K)", "", "")),
+		"R": (("算数平均值", "加权平均值", "标准差", "偏度", "信息熵"),
+	 				("R(W/m^2)", "R(K/m^2)", "R(W/m^2)", "", "")),
+		"Other": (("算数平均值", "加权平均值", "标准差", "偏度", "信息熵"),
+	 				("", "", "", "", ""))
 		}
 	__data_label_key = ""
 	__abc = "abcdef"  # 序号
@@ -82,13 +82,7 @@ class Painter:
 		y_value = []
 		count = 0
 		while True:
-			if Painter.__data_label.get(Painter.__data_label_key)[0][ii] in Painter.__o_file_black_list:  # 不输出黑名单图片，重复运行删除对应图片
-				try:
-					os.remove(Painter.__st_fp + str(Painter.__data_label.get(Painter.__data_label_key)[0][ii]) + suffix)
-					print(Painter.__data_label.get(Painter.__data_label_key)[0][ii] + "（旧文件）被成功移除")
-				except Exception as result:
-					# print(result)
-					pass
+			if Painter.__data_label.get(Painter.__data_label_key)[0][ii] in Painter.__o_file_black_list:  # 不输出黑名单图片
 				ii += 1
 				if ii >= len(Painter.__y_value[0]):
 					break
@@ -162,7 +156,7 @@ class CalculateTool:
 		self.elem_counts = np.shape(self.nums)[0]  # 数据个数
 
 		# 数据声明
-		self.mean = self.average = self.std = self.smoothness = self.c_moment3 = self.entropy = self.sk = 0.0
+		self.mean = self.average = self.std = self.c_moment3 = self.entropy = self.sk = 0.0
 		self.mid_pair = {}
 
 	# 算数平均值
@@ -186,16 +180,12 @@ class CalculateTool:
 	def __cal_std(self):
 		self.std = np.std(self.nums)
 
-	# 光滑度
-	def get_smoothness(self):
-		return self.smoothness
-
-	def __cal_smoothness(self):
-		self.smoothness = 1 - 1 / (1 + self.std ** 2)
-
 	# 三阶中心距
 	def get_c_moment3(self):
 		return self.c_moment3
+
+	def __cal_c_moment3(self):
+		self.c_moment3 = np.sum((self.nums - self.mean) ** 3) / self.elem_counts
 
 	# 偏度
 	def __cal_skewness(self):
@@ -203,13 +193,6 @@ class CalculateTool:
 
 	def get_skewness(self):
 		return self.sk
-
-	def __cal_c_moment3(self):
-		self.c_moment3 = np.sum((self.nums - self.mean) ** 3) / self.elem_counts
-
-	# 三阶矩
-	def get_moment3(self):
-		return self.c_moment3 ** (1 / 3)
 
 	# 频数分布
 	def get_fd_data(self):
@@ -258,7 +241,6 @@ class CalculateTool:
 		self.__cal_mean()
 		self.__cal_average()
 		self.__cal_std()
-		self.__cal_smoothness()
 		self.__cal_c_moment3()
 		self.__cal_skewness()
 		self.__do_fd()
@@ -280,11 +262,11 @@ class CalculateTool:
 		try:
 			st = wb.sheets["计算结果"]
 			if self.file_count == 1:
-				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "数据平滑度", "偏度", 
+				st.range((1, 1)).value = ["名称", "算数平均值", "加权平均值", "标准差", "偏度", 
 										  "信息熵", "", "频数统计分段数"]
 				st.range((2, 9)).value = self.dis_num
 			st.range((self.file_count + 1, 1)).value = [self.filename, self.mean, self.average, self.std,
-														self.smoothness, self.sk, self.entropy]
+														self.sk, self.entropy]
 
 			st = wb.sheets["频数统计"]
 			st.range((self.file_count * 3 - 2, 1)).value = [self.filename]
@@ -294,7 +276,7 @@ class CalculateTool:
 
 		# 导出图片 -- 录入本次计算结果
 		filename_num = float(self.filename)
-		ys = [self.mean, self.average, self.std, self.smoothness, self.sk, self.entropy]
+		ys = [self.mean, self.average, self.std, self.sk, self.entropy]
 		xl = self.folder_path[self.folder_path.rfind("\\") + 1:len(self.folder_path)]
 		xl = re.sub(r"^\d*", "", xl)  # 正则，去除文件夹名称中的数字
 		Painter.st_enter_line_data(self.folder_path + "\\", self.file_count, filename_num, ys, xl)

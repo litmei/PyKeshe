@@ -2,7 +2,7 @@ import os
 
 
 def del_file(path: str, deep: int = -1):
-    filename_list = ("3光滑度",)
+    filename_list = ("3数据平滑度", "4偏度", "5信息熵")
     if deep > 2:
         return False
 
